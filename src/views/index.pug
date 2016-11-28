@@ -1,0 +1,15 @@
+extends layout
+
+block mainContent
+    h1 Enter the URL you wish to compress
+
+    form(method="post")
+        div
+            br
+            div 
+                span.inputtitle URL :
+                input(type='text', name='inputurltext')
+                h3 #{outputurl}
+            
+            #inputurlsubmit
+                input.button(type='submit' value='submit')

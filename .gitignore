@@ -35,3 +35,17 @@ jspm_packages
 
 # Optional REPL history
 .node_repl_history
+
+*.js.map
+
+# Only Typescript files need to be commited to git
+app/**/*.js
+app/**/*.js.map
+test/**/*.js
+test/**/*.js.map
+dist/**/*.js
+dist/**/*.js.map
+dist/**/*.pug
+
+_test-output
+_temp
