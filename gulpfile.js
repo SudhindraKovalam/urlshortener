@@ -6,14 +6,16 @@ const clean = require('gulp-clean');
 const tsProject = ts.createProject('./tsconfig.json');
 
 gulp.task('clean',()=>{
-  return gulp.src('dist/**.*', {read: false})
-    .pipe(clean());
+	gulp.src('dist/views/**.*', {read: false}).pipe(clean());
+	gulp.src('dist/public/styles/**.*', {read: false}).pipe(clean());
+  	return gulp.src('dist/**.*', {read: false}).pipe(clean());
 });
 
 gulp.task('scripts',['clean'], () => {
   const tsResult = tsProject.src()
   .pipe(tsProject());
   gulp.src(['src/views/**/*']).pipe(gulp.dest('dist/views'));
+  gulp.src(['src/public/styles/**.*']).pipe(gulp.dest('dist/public/styles'));
   return tsResult.js.pipe(gulp.dest('dist'));
 });
 

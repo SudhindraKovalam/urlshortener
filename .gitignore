@@ -49,3 +49,6 @@ dist/**/*.pug
 
 _test-output
 _temp
+
+# Environment Variables
+*.env

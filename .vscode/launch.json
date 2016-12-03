@@ -11,7 +11,7 @@
             "program": "${workspaceRoot}/dist/index.js",
             "cwd": "${workspaceRoot}",
             "outFiles": [],
-            "sourceMaps": true
+            "sourceMaps": true     
         },
         {
             "type": "node",

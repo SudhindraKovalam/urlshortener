@@ -1,11 +1,15 @@
 import * as http from 'http';
 import * as debug from 'debug';
 
+// for local development, need a convinient way to set environment variables. The '.env' file is git ignored
+require('dotenv').config({silent: true});
+
+
 import App from './App';
 
 debug('ts-express:server');
 
-const port = normalizePort(process.env.PORT || 3001);
+const port = normalizePort(process.env.PORT || 3000);
 App.set('port', port);
 
 const server = http.createServer(App);
@@ -40,5 +44,5 @@ function onError(error: NodeJS.ErrnoException): void {
 function onListening(): void {
   let addr = server.address();
   let bind = (typeof addr === 'string') ? `pipe ${addr}` : `port ${addr.port}`;
-  debug(`Listening on ${bind}`);
+  console.log(`Listening on ${bind}`);
 }

@@ -24,6 +24,7 @@ class App {
     this.express.set('views', __dirname + '/views');
     this.express.set('view engine', 'pug');
     this.express.set('view options', { layout: true });
+    this.express.use(express.static(__dirname + '/public'));
    
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({ extended: false }));
