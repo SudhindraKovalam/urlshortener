@@ -117,12 +117,5 @@ if [ -e "$DEPLOYMENT_TARGET/package.json" ]; then
   cd - > /dev/null
 fi
 
-if [ -e "$DEPLOYMENT_TARGET/gulpfile.js" ]; then
-  cd "$DEPLOYMENT_TARGET"
-  eval "gulp scripts"
-  exitWithMessageOnError "npm failed"
-  cd - > /dev/null
-fi
-
 ##################################################################################################################################
 echo "Finished successfully."
