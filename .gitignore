@@ -44,6 +44,7 @@ app/**/*.js.map
 test/**/*.js
 test/**/*.js.map
 dist/**/*.js
+dist/**/*.css
 dist/**/*.js.map
 dist/**/*.pug
 
