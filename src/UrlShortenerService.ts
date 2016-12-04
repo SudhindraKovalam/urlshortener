@@ -39,6 +39,17 @@ export class UrlShortenerService {
 
     }
     
+     /*
+     * @Function compressUrl(inputUrl: string, requestIpAddr: string)
+     *
+     * @Synopsis  Compress the provided URI and return the compressed URI
+     * @Description  
+            Returns the shortened URI if the URL is not the host URL 
+     * @Arguments 
+     *   value  The input potential URI to compress.
+     *
+     * @Returns a promise <string> which is the compresed URI
+     */
     public compressUrl(inputUrl: string, requestIpAddr: string) : Promise<string> {
        var that = this;
        return new Promise<string>(function(resolve, reject)
@@ -64,15 +75,21 @@ export class UrlShortenerService {
        });
     }
 
+    /*
+     * @Function expandUrl(inputUrl: string, requestIpAddr: string)
+     *
+     * @Synopsis  Compress the provided URI and return the compressed URI
+     * @Description  
+            Returns the expanded URI using the hashid query param from the URI.
+     * @Arguments 
+     *   value  The input potential URI to expand.
+     *
+     * @Returns a promise <string> which is the expanded URI
+     */
     public expandUrl(shortUrl: string, requestIpAddr: string) :  Promise<string>{
        var that = this;
        return new Promise<string>(function(resolve, reject)
        {
-           if(shortUrl.indexOf(process.env.SERVICE_DNS_NAME ) == -1)
-           {
-               reject(new Error("URL Not found"));
-           }
-
            var shortIdFromUrlParts = shortUrl.split('/');
            var shortenedId = shortIdFromUrlParts[shortIdFromUrlParts.length-1];
            var expandedUrlPromise = that.getURlFromShortId(shortenedId);
@@ -86,8 +103,17 @@ export class UrlShortenerService {
                reject(err);
            });
        });
-    }    
+    }
 
+    /*
+     * @Function generateShortId(inputUrl: string)
+     *
+     * @Description  Generate the hash for the URI and store it in redis cache and return the shortened URL
+     * @Arguments 
+     *   inputUrl  The input potential URI to hashed and stored.
+     *
+     * @Returns a promise <string> which is the shortened URI
+     */
     public generateShortId(inputUrl:string): Promise<string>{
        var that = this;
        return new Promise<string>(function(resolve, reject)
@@ -120,7 +146,15 @@ export class UrlShortenerService {
 
     }
 
-
+     /*
+     * @Function getURlFromShortId(inputShortId: string)
+     *
+     * @Description  Get the URI stored against the provided hash key in redis
+     * @Arguments 
+     *   inputShortId  The input shortened URI hash.
+     *
+     * @Returns a promise <string> which is the expanded URI
+     */
     public getURlFromShortId(inputShortId: String) : Promise<string>{
        var that = this;
        return new Promise<string>(function(resolve, reject)
@@ -145,6 +179,17 @@ export class UrlShortenerService {
        });
     }
 
+    /*
+     * @Function logRequest(inputURL:string, outputUrl: string, requestorIpAddress, requestType: string, isSuccesful:boolean)
+     *
+     * @Description  Logs the request
+     * @Arguments 
+     *   inputURL              The input.
+     *   outputUrl             The output.
+     *   requestorIpAddress    The requust IP address
+     *   requestType           The Type of request
+     *   isSuccesful           Logs the request as a success or failure.
+     */
     private logRequest(inputURL:string, outputUrl: string, requestorIpAddress, requestType: string, isSuccesful:boolean): void{
         var now =  new Date();
         var partitionKey =  dateFormat(now, "ddmmyyyy").toString();
