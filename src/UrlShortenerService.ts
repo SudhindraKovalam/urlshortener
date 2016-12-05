@@ -55,7 +55,6 @@ export class UrlShortenerService {
        var that = this;
        return new Promise<string>(function(resolve, reject)
        {
-           console.info('in compress url with input url' + inputUrl);
            if(inputUrl.lastIndexOf(process.env.SERVICE_DNS_NAME,0)===0)
            {
                console.info('input url is same as the current site, hence no need to compress');
@@ -66,7 +65,6 @@ export class UrlShortenerService {
            shortIdPromise.then((identifier)=>{
                // Log the request for compression and return the shortened URL
                var urlToBeReturned =  process.env.SERVICE_DNS_NAME +'/'+ identifier;
-               console.info('returning url ' + urlToBeReturned);
                resolve(urlToBeReturned);
                that.logRequest(inputUrl, identifier, requestIpAddr, 'compress',true);
            })
@@ -101,7 +99,6 @@ export class UrlShortenerService {
            if(shortenedId.charAt(0) === '/'){
              shortenedId= shortenedId.substr(1);
            }
-           console.info(shortenedId);
            var expandedUrlPromise = that.getURlFromShortId(shortenedId);
            expandedUrlPromise.then((targeturl)=>{
                resolve(targeturl);
@@ -127,7 +124,6 @@ export class UrlShortenerService {
      */
     public generateShortId(inputUrl:string): Promise<string>{
        var that = this;
-       console.info('entering generateShortId');
        return new Promise<string>(function(resolve, reject)
        {
            var shortUrlId = hash(inputUrl);
@@ -137,7 +133,6 @@ export class UrlShortenerService {
                    {
                        if(!err)
                        {
-                           console.info('Added Entry ' + shortUrlId);
                            resolve(shortUrlId);
                        }
                        else
@@ -169,7 +164,6 @@ export class UrlShortenerService {
      */
     public getURlFromShortId(inputShortId: String) : Promise<string>{
        var that = this;
-       console.info('entering getURlFromShortId with input:' + inputShortId);
        return new Promise<string>(function(resolve, reject)
        {
            that.redisClient.get(inputShortId, function(err,reply)

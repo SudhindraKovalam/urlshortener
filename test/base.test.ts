@@ -26,6 +26,7 @@ describe('shorten url with empty input URL', () => {
     .send({inputurltext: ' '})
     .then(res => {
       expect(res.type).to.eql('text/html');
+      expect(res.body).to.contain('Please enter a valid URL');
     })
     .catch(err => {
       // error handling
@@ -40,7 +41,7 @@ describe('shorten url with invalid input URL', () => {
     .send({inputurltext: ' This is an invalid entry'})
     .then(res => {
       expect(res.type).to.eql('text/html');
-      //expect(res.body).to.contain('Please enter a valid URL');
+      expect(res.body).to.contain('Please enter a valid URL');
     })
     .catch(err => {
       // error handling

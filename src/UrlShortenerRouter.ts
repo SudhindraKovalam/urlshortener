@@ -104,7 +104,7 @@ export class UrlShortenerRouter {
     // add routes
     this.router.post('/', this.processInput);
     this.router.get('/', this.getDefault);
-    //this.router.get('/:shortId', this.redirectUserFromShortenedURl);
+    this.router.get('/:shortId', this.redirectUserFromShortenedURl);
   }
 
 }
