@@ -6,7 +6,7 @@ import * as dateFormat from 'dateformat';
 // doesnot have a typed definition, so import node.js style.
 var hash =require('uniki');
 var URL = require('url-parse');
-
+var trim = require('trim');
 
 export class UrlShortenerService {
     
@@ -166,7 +166,7 @@ export class UrlShortenerService {
        var that = this;
        return new Promise<string>(function(resolve, reject)
        {
-           that.redisClient.get(inputShortId, function(err,reply)
+           that.redisClient.get(trim(inputShortId), function(err,reply)
            {
                if(!err)
                {
