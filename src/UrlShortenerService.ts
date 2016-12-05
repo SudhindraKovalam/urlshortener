@@ -5,6 +5,7 @@ import * as dateFormat from 'dateformat';
 
 // doesnot have a typed definition, so import node.js style.
 var hash =require('uniki');
+var URL = require('url-parse');
 
 
 export class UrlShortenerService {
@@ -54,21 +55,24 @@ export class UrlShortenerService {
        var that = this;
        return new Promise<string>(function(resolve, reject)
        {
+           console.info('in compress url with input url' + inputUrl);
            if(inputUrl.lastIndexOf(process.env.SERVICE_DNS_NAME,0)===0)
            {
-               reject(new Error("Cannot compress current HOST URLs"));
+               console.info('input url is same as the current site, hence no need to compress');
+               reject(new Error("No point in shortening the current site's URLs"));
            }
    
            var shortIdPromise = that.generateShortId(inputUrl);
            shortIdPromise.then((identifier)=>{
                // Log the request for compression and return the shortened URL
                var urlToBeReturned =  process.env.SERVICE_DNS_NAME +'/'+ identifier;
+               console.info('returning url ' + urlToBeReturned);
                resolve(urlToBeReturned);
                that.logRequest(inputUrl, identifier, requestIpAddr, 'compress',true);
            })
            .catch((err)=>{
                // Log Error here
-               console.log(err);
+               console.error(err.message);
                that.logRequest(inputUrl, 'error', requestIpAddr, 'compress',false);
                reject(err);
            });
@@ -90,8 +94,14 @@ export class UrlShortenerService {
        var that = this;
        return new Promise<string>(function(resolve, reject)
        {
-           var shortIdFromUrlParts = shortUrl.split('/');
-           var shortenedId = shortIdFromUrlParts[shortIdFromUrlParts.length-1];
+           var shortIdUrlParts= new URL(shortUrl, true);
+           
+           var shortenedId = shortIdUrlParts.pathname;
+
+           if(shortenedId.charAt(0) === '/'){
+             shortenedId= shortenedId.substr(1);
+           }
+           console.info(shortenedId);
            var expandedUrlPromise = that.getURlFromShortId(shortenedId);
            expandedUrlPromise.then((targeturl)=>{
                resolve(targeturl);
@@ -99,6 +109,7 @@ export class UrlShortenerService {
            })
            .catch((err)=>{
                // Log Error here
+               console.error(err.message);
                that.logRequest(shortUrl, err.message, requestIpAddr, 'error',false);
                reject(err);
            });
@@ -116,21 +127,22 @@ export class UrlShortenerService {
      */
     public generateShortId(inputUrl:string): Promise<string>{
        var that = this;
+       console.info('entering generateShortId');
        return new Promise<string>(function(resolve, reject)
        {
            var shortUrlId = hash(inputUrl);
-
            that.redisClient.get(shortUrlId.toString(), function(err,reply){
               if(!reply){
-                  that.redisClient.set()
                    that.redisClient.set(shortUrlId, inputUrl, function(err,reply)
                    {
                        if(!err)
                        {
+                           console.info('Added Entry ' + shortUrlId);
                            resolve(shortUrlId);
                        }
                        else
                        {
+                           console.error(err.message);
                            reject(err);
                        }
                    })
@@ -157,6 +169,7 @@ export class UrlShortenerService {
      */
     public getURlFromShortId(inputShortId: String) : Promise<string>{
        var that = this;
+       console.info('entering getURlFromShortId with input:' + inputShortId);
        return new Promise<string>(function(resolve, reject)
        {
            that.redisClient.get(inputShortId, function(err,reply)
@@ -172,6 +185,7 @@ export class UrlShortenerService {
                }
                else
                {
+                   console.error(err.message);
                    reject(err);
                }
            })

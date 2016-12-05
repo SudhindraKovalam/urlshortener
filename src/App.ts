@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import * as errorHandler from 'errorhandler';
 
 import UrlShortenerRouter from './UrlShortenerRouter';
+var favicon = require('serve-favicon');
 
 // Creates and configures an ExpressJS web server.
 class App {
@@ -25,7 +26,8 @@ class App {
     this.express.set('view engine', 'pug');
     this.express.set('view options', { layout: true });
     this.express.use(express.static(__dirname + '/public'));
-   
+    this.express.use(favicon(__dirname + '/public/favicon.ico'));
+    
     this.express.use(bodyParser.json());
     this.express.use(bodyParser.urlencoded({ extended: false }));
     var env = process.env.NODE_ENV || 'development';
@@ -42,9 +44,11 @@ class App {
      * API endpoints */
     let router = express.Router();
     // placeholder route handler
-    router.get('/', (req, res, next) => {
-      res.render('index',{ inputurl:'', outputurl:'' });
+    // Prevent the GET request for Favicon.ICO
+    router.get('/favicon.ico', function(req, res) {
+        res.send(200);
     });
+
     this.express.use('/', UrlShortenerRouter);
     //this.express.use('/v1/urls', UrlShortenerRouter);
   }

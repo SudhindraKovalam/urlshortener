@@ -3,9 +3,7 @@ import * as logger from 'morgan';
 import * as Promise from 'bluebird';
 
 import UrlShortenerService from './UrlShortenerService';
-
-var validUrl = require('valid-url');
-
+var checkUrl = require('valid_url');
 export class UrlShortenerRouter {
   router: Router
 
@@ -27,42 +25,48 @@ export class UrlShortenerRouter {
     // else we can compress the url
     var ip_addr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     var requestedURL = req.body.inputurltext;
-
+    var invalidInput = false;
     // check if the user input is a valid URI or not
-    if(!validUrl.isUri(requestedURL))
+    if(!checkUrl(requestedURL))
     {
+      console.error('Input is an invalid url ' + requestedURL);
       res.render('index',{ inputurl:'', outputurl:'Please enter a valid URL'});
+      invalidInput=true;
     }
-
-    if(requestedURL.startsWith(process.env.SERVICE_DNS_NAME))
+    if(!invalidInput)
     {
-      // The requested URL starts with the current host name, 
-      // Should expand the URL
-      var promise = UrlShortenerService.expandUrl(requestedURL, ip_addr);
-      promise.then((url)=>{
-        res.render('index',{ inputurl:requestedURL, outputurl:url});
-      })
-      .catch((err)=>{
-        res.render('index',{ inputurl:requestedURL, outputurl:err.message});
-      });
-    }
-    else
-    {
-      // Compress the URL
-      var promise = UrlShortenerService.compressUrl(requestedURL, ip_addr);
-      promise.then((url)=>{
-        res.render('index',{ inputurl:requestedURL, outputurl:url});
-      })
-      .catch((err)=>{
-        res.render('index',{ inputurl:requestedURL, outputurl:err.meesage});
-      });
-    }
+      if(requestedURL.startsWith(process.env.SERVICE_DNS_NAME))
+      {
+        // The requested URL starts with the current host name, 
+        // Should expand the URL
+        var promise = UrlShortenerService.expandUrl(requestedURL, ip_addr);
+        promise.then((url)=>{
+          res.render('index',{ inputurl:requestedURL, outputurl:url});
+        })
+        .catch((err)=>{
+          res.render('index',{ inputurl:requestedURL, outputurl:err.message});
+        });
+      }
+      else
+      {
+        // Compress the URL
+        var promise = UrlShortenerService.compressUrl(requestedURL, ip_addr);
+        promise.then((url)=>{
+          res.render('index',{ inputurl:requestedURL, outputurl:url});
+        })
+        .catch((err)=>{
+          res.render('index',{ inputurl:requestedURL, outputurl:err.meesage});
+        });
+      }
+      }
+    
   }
   
   /**
    * returns the default view
    */
   public getDefault(req: Request, res: Response, next: NextFunction) {
+    
     res.render('index',{ inputurl:'', outputurl:'' });
   }
 
@@ -73,10 +77,18 @@ export class UrlShortenerRouter {
       var ip_addr = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
       var shortUrl = req.url;
 
+     
+      if(shortUrl.indexOf('favicon.ico')> -1)
+      {
+        console.log('favicon requested');
+        res.sendStatus(200);
+        //res.end();
+      }
+
+       console.log('redirect: '+ shortUrl);
       var promise = UrlShortenerService.expandUrl(shortUrl, ip_addr);
       promise.then((url)=>{
         //redirect to the URl here.
-        console.log(url);
         res.redirect(url);
       })
       .catch((err)=>{
@@ -92,8 +104,9 @@ export class UrlShortenerRouter {
     // add routes
     this.router.post('/', this.processInput);
     this.router.get('/', this.getDefault);
-    this.router.get('/:shortId', this.redirectUserFromShortenedURl);
+    //this.router.get('/:shortId', this.redirectUserFromShortenedURl);
   }
+
 }
 
 // Create the UrlShortenerRouter, and export its configured Express.Router

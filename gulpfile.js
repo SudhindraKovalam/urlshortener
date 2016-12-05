@@ -14,8 +14,11 @@ gulp.task('clean',()=>{
 gulp.task('scripts',['clean'], () => {
   const tsResult = tsProject.src()
   .pipe(tsProject());
+  gulp.src(['src/public/**.*']).pipe(gulp.dest('dist/public'));
+ 
   gulp.src(['src/views/**/*']).pipe(gulp.dest('dist/views'));
   gulp.src(['src/public/styles/**.*']).pipe(gulp.dest('dist/public/styles'));
+ 
   return tsResult.js.pipe(gulp.dest('dist'));
 });
 
